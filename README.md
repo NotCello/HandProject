@@ -97,19 +97,22 @@ wx, wy = int(lm.landmark[0].x * w), int(lm.landmark[0].y * h)
 color = (255, 0, 255) if label == "Left" else (0, 255, 255)
 cv2.putText(frame, f"{label} {score:.2f}", (wx + 10, wy - 10),
             cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2, cv2.LINE_AA)
+
+---
 🛠 Troubleshooting
 Webcam won’t open: Close other apps using the webcam, try cv2.VideoCapture(1) (or 2), or remove the V4L2 backend for non-Linux.
 Low FPS: Lower resolution, set MODEL_COMPLEXITY=0, set DRAW_LANDMARKS = False.
 Flickering after occlusion: Increase SMOOTH_N or DEBOUNCE_N; filter low-handedness confidence.
 Left/Right swapped: The view is mirrored, so labels fit visual orientation. For “physical” handedness, process the frame unflipped or adjust label before display.
 Only one hand detected: Make sure max_num_hands = 2 in code.
+---
 📁 Suggested Folder Structure
 .
 ├─ finger_count_bihand.py
 ├─ requirements.txt
 ├─ README.md
 📜 License
-MIT (or your preferred license)
+MIT 
 
 🙏 Credits
 MediaPipe Hands (Google)
