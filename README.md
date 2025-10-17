@@ -1,4 +1,4 @@
-Two‑Hand Finger Counter (MediaPipe + OpenCV)
+**Two‑Hand Finger Counter (MediaPipe + OpenCV)**
 Low‑latency, two‑hand finger counter using your webcam. Detects left vs right hand, counts extended fingers (with correct thumb logic), and stabilizes outputs with smoothing + debouncing. Includes FPS overlay and low‑latency camera settings.
 
 Use it to learn real‑time vision fundamentals and to showcase problem‑solving and performance instrumentation.
