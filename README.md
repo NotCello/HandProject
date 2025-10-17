@@ -49,7 +49,7 @@ Edit values at the top of `finger_count_bihand.py`:
 - `DEBOUNCE_N`: show new value only after this many stable frames
 
 **Make sure `max_num_hands=2`:**
-```python
+python
 hands = mp_hands.Hands(
     static_image_mode=False,
     max_num_hands=2,  # allow detection of both hands
