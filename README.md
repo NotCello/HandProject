@@ -58,7 +58,7 @@ hands = mp_hands.Hands(
     min_tracking_confidence=MIN_TRK_CONF
 )
 
-🕹 How It Works
+🕹 ** How It Works**
 Capture and preprocess
 
 Grabs webcam frames with OpenCV
@@ -74,6 +74,8 @@ Loop example:
 for lm, hh in zip(res.multi_hand_landmarks, res.multi_handedness):
     label = hh.classification[0].label
     score = hh.classification[0].score
+
+    
 Finger counting
 
 Index/Middle/Ring/Pinky: “open” if tip.y < pip.y
