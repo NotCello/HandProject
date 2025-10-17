@@ -57,7 +57,7 @@ hands = mp_hands.Hands(
     min_detection_confidence=MIN_DET_CONF,
     min_tracking_confidence=MIN_TRK_CONF
 )
-
+---
 🕹 ** How It Works**
 Capture and preprocess
 
@@ -99,12 +99,14 @@ cv2.putText(frame, f"{label} {score:.2f}", (wx + 10, wy - 10),
             cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2, cv2.LINE_AA)
 
 ---
-🛠 Troubleshooting
-Webcam won’t open: Close other apps using the webcam, try cv2.VideoCapture(1) (or 2), or remove the V4L2 backend for non-Linux.
-Low FPS: Lower resolution, set MODEL_COMPLEXITY=0, set DRAW_LANDMARKS = False.
-Flickering after occlusion: Increase SMOOTH_N or DEBOUNCE_N; filter low-handedness confidence.
-Left/Right swapped: The view is mirrored, so labels fit visual orientation. For “physical” handedness, process the frame unflipped or adjust label before display.
-Only one hand detected: Make sure max_num_hands = 2 in code.
+Troubleshooting
+Webcam won’t open: 
+- Close other apps using the webcam, try cv2.VideoCapture(1) (or 2), or remove the V4L2 backend for non-Linux.
+- Low FPS: Lower resolution, set MODEL_COMPLEXITY=0, set DRAW_LANDMARKS = False.
+- Flickering after occlusion: Increase SMOOTH_N or DEBOUNCE_N; filter low-handedness confidence.
+- Left/Right swapped: The view is mirrored, so labels fit visual orientation. For “physical” handedness, process the frame unflipped or adjust label before display.
+- Only one hand detected: Make sure max_num_hands = 2 in code.
+  
 ---
 📁 Suggested Folder Structure
 .
