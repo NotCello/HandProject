@@ -1,5 +1,11 @@
 # Two-Hand Finger Counter (MediaPipe + OpenCV)
 
+### 🎥 Watch the Live Demo!
+
+Click here to see the project in action on YouTube (https://youtu.be/GwZsEzGZbw0)
+
+---
+
 **A Python project for real-time finger counting on both hands using OpenCV and MediaPipe.**
 The code detects both hands, assigns handedness (“Left” or “Right”), counts extended fingers (with proper thumb logic), and stabilizes results using smoothing and debouncing. Includes FPS overlay and low-latency camera settings.
 
