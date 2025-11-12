@@ -1,127 +1,120 @@
-# Two-Hand Finger Counter (MediaPipe + OpenCV)
+# Single-Hand Finger Counter (MediaPipe + OpenCV)
 
-### 🎥 Watch the Live Demo!
+**A Python project for real-time single-hand finger counting using a webcam, OpenCV, and MediaPipe.**
 
-Click here to see the project in action on YouTube (https://youtu.be/GwZsEzGZbw0)
-
----
-
-**A Python project for real-time finger counting on both hands using OpenCV and MediaPipe.**
-The code detects both hands, assigns handedness (“Left” or “Right”), counts extended fingers (with proper thumb logic), and stabilizes results using smoothing and debouncing. Includes FPS overlay and low-latency camera settings.
+This script detects one hand, counts the extended fingers (with proper thumb logic), and displays the count and FPS on a mirrored (selfie-view) video.
 
 ---
 
-## ✨ Features
+## Features
 
-- **Real-time finger counting** for both hands via webcam
-- **Handedness recognition**: distinguishes between left and right hands
-- **Robust algorithm**: smoothing (majority over recent frames) and debouncing (updates only after N stable frames)
-- **Live overlays**: FPS and “Left/Right” counters
-- **Performance optimized**: low-latency capture, minimal buffering, MJPG compression
-
----
-
-## 🚀 Quick Start
-
-1. **Create and activate a virtual environment:**
-
-   **Linux/macOS:**
-   python3 -m venv .venv source .venv/bin/activate
-
-**Windows:**
-    py -m venv .venv .venv\Scripts\activate
-
-2. **Install dependencies:**
-     pip install -r requirements.txt
-3. **Run the script:**
-   python finger_count_bihand.py
-
-4. **Controls:** Press **ESC** in the window to quit.
+* **Real-time counting** for a **single hand** via webcam.
+* **Orientation-aware thumb logic** (distinguishes right/left for correct thumb counting).
+* **Selfie Mode** (`cv2.flip`): Video is mirrored, but the text remains upright.
+* **Live Overlays**: Shows the **total finger count** and real-time **FPS**.
 
 ---
 
-## 📝 requirements.txt
-opencv-python>=4.8 mediapipe>=0.10 numpy>=1.22
+##  Quick Start
+
+1.  **Create and activate a virtual environment:**
+
+    **Linux/macOS:**
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
+
+    **Windows:**
+    ```bash
+    py -m venv .venv
+    .venv\Scripts\activate
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+3.  **Run the script:**
+    ```bash
+    python finger_counter_flipped.py
+    ```
+4.  **Controls:** Press **'q'** in the window to quit.
 
 ---
 
-## ⚙️ Configuration
+##  requirements.txt
+opencv-python mediapipe
 
-Edit values at the top of `finger_count_bihand.py`:
-- `WIDTH`, `HEIGHT`, `REQ_FPS`: camera resolution and FPS
-- `MODEL_COMPLEXITY`: 0 (fastest), 1/2 (higher accuracy, lower FPS)
-- `DRAW_LANDMARKS`: `True`/`False` to show/hide hand skeleton drawing
-- `SMOOTH_N`: smoothing window (higher is more stable, but slower reaction)
-- `DEBOUNCE_N`: show new value only after this many stable frames
+---
 
-**Make sure `max_num_hands=2`:**
-python
+## Configuration
+
+You can modify the MediaPipe parameters directly in the code:
+
+```python
 hands = mp_hands.Hands(
     static_image_mode=False,
-    max_num_hands=2,  # allow detection of both hands
-    model_complexity=MODEL_COMPLEXITY,
-    min_detection_confidence=MIN_DET_CONF,
-    min_tracking_confidence=MIN_TRK_CONF
+    max_num_hands=1,  # Ensures only one hand is detected
+    min_detection_confidence=0.6,
+    min_tracking_confidence=0.6
 )
----
-🕹 ** How It Works**
-Capture and preprocess
+```
+ How It Works
+1. Capture and Preprocessing
+```
+Grabs frames from the webcam (cv2.VideoCapture(0)).
 
-Grabs webcam frames with OpenCV
-Flips horizontally for “selfie” view (cv2.flip(frame, 1))
-Converts to RGB for MediaPipe processing
-Hand and landmark detection
+Converts the frame to RGB for MediaPipe (cv2.cvtColor).```
+```
+```
+2. Hand and Landmark Detection
+hands.process(frame_rgb) detects the hand and calculates the 21 landmarks.
 
-MediaPipe Hands returns for each detected hand:
-21 landmarks
-Handedness label ("Left" or "Right") with confidence
-Loop example:
+It also returns the "Left" or "Right" label, which is crucial for the thumb logic.
+```
+3. Finger Counting
+```
+Index, Middle, Ring, Pinky: Considered "open" if their tip Y-coordinate is less than their lower joint (pip).
 
-for lm, hh in zip(res.multi_hand_landmarks, res.multi_handedness):
-    label = hh.classification[0].label
-    score = hh.classification[0].score
+Thumb: Has lateral logic based on the hand label (to work correctly in the mirrored view):
 
-    
-Finger counting
+Right hand: Extended if the tip's X is less than the joint's X.
 
-Index/Middle/Ring/Pinky: “open” if tip.y < pip.y
-Thumb: lateral logic based on handedness
-Right hand: extended if tip.x < ip.x
-Left hand: extended if tip.x > ip.x
-Smoothing and debouncing
+Left hand: Extended if the tip's X is greater than the joint's X.
+```
+4. Overlay and Display
+```
+The entire video frame is flipped (cv2.flip(frame, 1)) to create a mirror effect.
 
-Circular buffer stores recent raw counts per hand
-Majority (mode) over buffer smooths noise
-Updates displayed value only after N stable frames
-Overlay
+After flipping, the text overlays (count and FPS) are drawn so they appear upright and un-mirrored.
 
-Displays “Left: …”, “Right: …”, and “FPS: …” on video
-Optional: draws landmarks/skeleton
-For adding per-hand label overlay:
-
-wx, wy = int(lm.landmark[0].x * w), int(lm.landmark[0].y * h)
-color = (255, 0, 255) if label == "Left" else (0, 255, 255)
-cv2.putText(frame, f"{label} {score:.2f}", (wx + 10, wy - 10),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2, cv2.LINE_AA)
-
----
+A black rectangle is drawn to improve the count's readability.
+```
+--- 
 Troubleshooting
-Webcam won’t open: 
-- Close other apps using the webcam, try cv2.VideoCapture(1) (or 2), or remove the V4L2 backend for non-Linux.
-- Low FPS: Lower resolution, set MODEL_COMPLEXITY=0, set DRAW_LANDMARKS = False.
-- Flickering after occlusion: Increase SMOOTH_N or DEBOUNCE_N; filter low-handedness confidence.
-- Left/Right swapped: The view is mirrored, so labels fit visual orientation. For “physical” handedness, process the frame unflipped or adjust label before display.
-- Only one hand detected: Make sure max_num_hands = 2 in code.
-  
----
-📁 Suggested Folder Structure
-.
-├─ finger_count_bihand.py
-├─ requirements.txt
-├─ README.md
-📜 License
-MIT 
+Webcam won’t open:
 
-🙏 Credits
+Ensure no other program is using the webcam.
+
+Try changing the index to cv2.VideoCapture(1) (or 2).
+
+Low FPS:
+
+Increase the min_detection_confidence values (e.g., 0.7) to filter weak detections and reduce workload.
+
+Ensure you have good lighting.
+
+Folder Structure
+.
+├── finger_counter_flipped.py
+├── requirements.txt
+└── README.md
+License
+MIT
+
+Credits
 MediaPipe Hands (Google)
-OpenCV community
+
+OpenCV Community
+
